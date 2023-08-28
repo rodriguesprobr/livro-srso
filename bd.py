@@ -40,8 +40,24 @@ class bd:
 
     def executar(self, sql):
         self.cursor = self.conexao.cursor()
-        estado = self.cursor.execute(sql)
-        self.conexao.commit()
+        estado = None
+        try:
+            estado = self.cursor.execute(sql)
+        except pymysql.Error as err:
+            print("Erro: " + str(err))
+        if estado != None:
+            self.conexao.commit()
+        return estado
+
+    def inserir(self, sql, valores):
+        self.cursor = self.conexao.cursor()
+        estado = None
+        try:
+            estado = self.cursor.execute(sql, valores)
+        except pymysql.Error as err:
+            print("Erro: " + str(err))
+        if estado != None:
+            self.conexao.commit()
         return estado
 
     # Função para desconectar ao Sistema Gerenciador do Banco de Dados MySQL
