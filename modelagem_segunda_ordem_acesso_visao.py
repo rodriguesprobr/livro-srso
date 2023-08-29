@@ -179,7 +179,7 @@ with Bar(
                             bar.next()
 
 # Insere uma persmissão fantasma, de código 0 para consultas a acesso as Visões sem o uso de Permissões
-modelagem_segunda_ordem.executar("INSERT INTO permissao (codigo_permissao, nome, descricao, url) VALUES (0, 'Sem o uso de Permissão', 'Acesso apenas com o uso de Autorização de Acesso', '');", None)
+modelagem_segunda_ordem.inserir("INSERT INTO permissao (codigo_permissao, nome, descricao, url) VALUES (0, 'Sem o uso de Permissão', 'Acesso apenas com o uso de Autorização de Acesso', '');", None)
 with Bar(
         "Processando dados da tabela fato acesso - Acesso às Visões via somente Autorização de Acesso",
         max=(
