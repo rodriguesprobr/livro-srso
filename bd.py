@@ -2,6 +2,7 @@
 # -*- coding: utf8 -*-
 # Importa a biblioteca pymysql para operacionalizar o Sistema Gerenciador do Banco de Dados
 import pymysql
+import sys
 
 
 # Cria uma classe bd de conexão.
@@ -22,7 +23,7 @@ class bd:
     # Função para conectar ao Sistema Gerenciador do Banco de Dados MySQL
     def conectar(self, ip, usuario, senha, base_dados):
         try:
-            if self.conexao is None:
+            while self.conexao is None:
                 self.conexao = pymysql.connect(host=ip,
                                           user=usuario,
                                           password=senha,
@@ -31,11 +32,12 @@ class bd:
                                           )
         except pymysql.Error as e:
             print("Erro: {0} - {1} ".format(str(e.args[0]), str(e.args[1])))
+            sys.exit(1)
 
     # Função para encapsular as consultas ao Sistema Gerenciador do Banco de Dados MySQL
-    def selecionar(self, sql):
+    def selecionar(self, sql, valores):
         self.cursor = self.conexao.cursor()
-        self.cursor.execute(sql)
+        self.cursor.execute(sql, valores)
         return self.cursor.fetchall()
 
     def executar(self, sql):
@@ -44,7 +46,8 @@ class bd:
         try:
             estado = self.cursor.execute(sql)
         except pymysql.Error as err:
-            print("Erro: " + str(err))
+            print("Erro: {0} - {1} ".format(str(err.args[0]), str(err.args[1])))
+            sys.exit(1)
         if estado != None:
             self.conexao.commit()
         return estado
@@ -55,7 +58,8 @@ class bd:
         try:
             estado = self.cursor.execute(sql, valores)
         except pymysql.Error as err:
-            print("Erro: " + str(err))
+            print("Erro: {0} - {1} ".format(str(err.args[0]), str(err.args[1])))
+            sys.exit(1)
         if estado != None:
             self.conexao.commit()
         return estado
