@@ -96,7 +96,7 @@ with Bar("Processando dados da dimensão Permissão", max=len(permissoes)) as ba
         )
         bar.next()
 
-# Insere dados para a dimensão visao, a partir da tabela permissao da Modelagem Direta, filtrando somente valores ativos
+# Insere dados para a dimensão visao, a partir da tabela visao da Modelagem Direta, filtrando somente valores ativos
 with Bar("Processando dados da dimensão Visão", max=len(visoes)) as bar:
     for visao in visoes:
         modelagem_segunda_ordem.inserir(
@@ -179,6 +179,7 @@ with Bar(
                             bar.next()
 
 # Insere uma persmissão fantasma, de código 0 para consultas a acesso as Visões sem o uso de Permissões
+modelagem_segunda_ordem.executar("DELETE FROM permissao WHERE codigo_permissao = 0;")
 modelagem_segunda_ordem.inserir("INSERT INTO permissao (codigo_permissao, nome, descricao, url) VALUES (0, 'Sem o uso de Permissão', 'Acesso apenas com o uso de Autorização de Acesso', '');", None)
 with Bar(
         "Processando dados da tabela fato acesso - Acesso às Visões via somente Autorização de Acesso",
@@ -237,7 +238,6 @@ with Bar(
                                 api["codigo_api"],
                                 api_versao["codigo_api_versao"],
                                 autorizacao_acesso["codigo_autorizacao_acesso"],
-                                permissao["codigo_permissao"],
                                 visao["codigo_visao"],
                                 1 if consulta_acesso[0]["acesso"] > 0 else 0
                             )
