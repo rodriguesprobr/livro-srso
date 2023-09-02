@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf8 -*-
-import sys
 
 from bd import bd
 from progress.bar import Bar
@@ -169,55 +168,65 @@ with Bar(
                 len(atributos)
         )
 ) as bar_acesso:
-        for api_versao in api_versoes:
-            for autorizacao_acesso in autorizacoes_acesso:
-                for permissao in permissoes:
-                    for atributo in atributos:
-                            consulta_acesso = modelagem_direta.selecionar(
-                                """
-                                    SELECT 
-                                        COUNT(*) AS acesso
-                                    FROM atributo 
-                                    INNER JOIN visao ON visao.codigo_visao = atributo.codigo_visao
-                                    INNER JOIN api_versao ON api_versao.codigo_api_versao = visao.codigo_api_versao
-                                    INNER JOIN autorizacao_acesso_permissao_atributo ON autorizacao_acesso_permissao_atributo.codigo_atributo = atributo.codigo_atributo
-                                    WHERE
-                                        api_versao.codigo_api_versao = %s
-                                        AND autorizacao_acesso_permissao_atributo.codigo_autorizacao_acesso = %s
-                                        AND autorizacao_acesso_permissao_atributo.codigo_permissao = %s
-                                        AND atributo.codigo_atributo = %s
-                                """,
-                                (
-                                    api_versao["codigo_api_versao"],
-                                    autorizacao_acesso["codigo_autorizacao_acesso"],
-                                    permissao["codigo_permissao"],
-                                    atributo["codigo_atributo"]
-                                )
+    api_versoes = modelagem_segunda_ordem.selecionar("SELECT codigo_api_versao, numero_versao, data_lancamento, "
+                                              "data_descontinuidade, descricao, url FROM api_versao;", None)
+    for api_versao in api_versoes:
+        autorizacoes_acesso = modelagem_segunda_ordem.selecionar("SELECT codigo_autorizacao_acesso, nome, descricao, "
+                                                                 "url FROM autorizacao_acesso;", None)
+        for autorizacao_acesso in autorizacoes_acesso:
+            permissoes = modelagem_segunda_ordem.selecionar("SELECT codigo_permissao, nome, descricao, url FROM "
+                                                            "permissao;", None)
+            for permissao in permissoes:
+                atributos = modelagem_segunda_ordem.selecionar("SELECT codigo_atributo, codigo_visao, codigo_dado_tipo,"
+                                                               " nome, descricao FROM atributo;", None)
+                for atributo in atributos:
+                        consulta_acesso = modelagem_direta.selecionar(
+                            """
+                                SELECT 
+                                    COUNT(*) AS acesso
+                                FROM atributo 
+                                INNER JOIN visao ON visao.codigo_visao = atributo.codigo_visao
+                                INNER JOIN api_versao ON api_versao.codigo_api_versao = visao.codigo_api_versao
+                                INNER JOIN autorizacao_acesso_permissao_atributo ON autorizacao_acesso_permissao_atributo.codigo_atributo = atributo.codigo_atributo
+                                WHERE
+                                    api_versao.codigo_api_versao = %s
+                                    AND autorizacao_acesso_permissao_atributo.codigo_autorizacao_acesso = %s
+                                    AND autorizacao_acesso_permissao_atributo.codigo_permissao = %s
+                                    AND atributo.codigo_atributo = %s
+                            """,
+                            (
+                                api_versao["codigo_api_versao"],
+                                autorizacao_acesso["codigo_autorizacao_acesso"],
+                                permissao["codigo_permissao"],
+                                atributo["codigo_atributo"]
                             )
-                            modelagem_segunda_ordem.inserir(
-                                """INSERT INTO acesso 
-                                    (
-                                        codigo_api_versao,
-                                        codigo_autorizacao_acesso,
-                                        codigo_permissao,
-                                        codigo_atributo,
-                                        acesso
-                                    ) VALUES (
-                                        %s, %s, %s, %s, %s
-                                    );""",
+                        )
+                        modelagem_segunda_ordem.inserir(
+                            """INSERT INTO acesso 
                                 (
-                                    api_versao["codigo_api_versao"],
-                                    autorizacao_acesso["codigo_autorizacao_acesso"],
-                                    permissao["codigo_permissao"],
-                                    atributo["codigo_atributo"],
-                                    1 if consulta_acesso[0]["acesso"] > 0 else 0
-                                )
+                                    codigo_api_versao,
+                                    codigo_autorizacao_acesso,
+                                    codigo_permissao,
+                                    codigo_atributo,
+                                    acesso
+                                ) VALUES (
+                                    %s, %s, %s, %s, %s
+                                );""",
+                            (
+                                api_versao["codigo_api_versao"],
+                                autorizacao_acesso["codigo_autorizacao_acesso"],
+                                permissao["codigo_permissao"],
+                                atributo["codigo_atributo"],
+                                1 if consulta_acesso[0]["acesso"] > 0 else 0
                             )
-                            bar_acesso.next()
+                        )
+                        bar_acesso.next()
 
 # Insere uma persmissão fantasma, de código 0 para consultar a acesso aos Atributos sem o uso de Permissões
 modelagem_segunda_ordem.executar("DELETE FROM permissao WHERE codigo_permissao = 0;")
-modelagem_segunda_ordem.inserir("INSERT INTO permissao (codigo_permissao, nome, descricao, url) VALUES (0, 'Sem o uso de Permissão', 'Acesso apenas com o uso de Autorização de Acesso', '');", None)
+modelagem_segunda_ordem.inserir("INSERT INTO permissao (codigo_permissao, nome, descricao, url) VALUES (0, "
+                                "'Sem o uso de Permissão', 'Acesso apenas com o uso de Autorização de Acesso', '');",
+                                None)
 with Bar(
         "Processando dados da tabela fato acesso - Acesso aos Atributos via Autorização de Acesso + Permissão",
         max=(
@@ -226,9 +235,15 @@ with Bar(
                 len(atributos)
         )
 ) as bar_acesso:
+    api_versoes = modelagem_segunda_ordem.selecionar("SELECT codigo_api_versao, numero_versao, data_lancamento, "
+                                                     "data_descontinuidade, descricao, url FROM api_versao;", None)
     for api_versao in api_versoes:
+        autorizacoes_acesso = modelagem_segunda_ordem.selecionar("SELECT codigo_autorizacao_acesso, nome, descricao, "
+                                                                 "url FROM autorizacao_acesso;", None)
         for autorizacao_acesso in autorizacoes_acesso:
             for atributo in atributos:
+                atributos = modelagem_segunda_ordem.selecionar("SELECT codigo_atributo, codigo_visao, codigo_dado_tipo,"
+                                                               " nome, descricao FROM atributo;", None)
                 consulta_acesso = modelagem_direta.selecionar(
                     """
                         SELECT 
@@ -236,7 +251,8 @@ with Bar(
                         FROM atributo 
                         INNER JOIN visao ON visao.codigo_visao = atributo.codigo_visao
                         INNER JOIN api_versao ON api_versao.codigo_api_versao = visao.codigo_api_versao
-                        INNER JOIN autorizacao_acesso_atributo ON autorizacao_acesso_atributo.codigo_atributo = atributo.codigo_atributo
+                        INNER JOIN autorizacao_acesso_atributo aaa 
+                            ON autorizacao_acesso_atributo.codigo_atributo = atributo.codigo_atributo
                         WHERE
                             api_versao.codigo_api_versao = %s
                             AND autorizacao_acesso_atributo.codigo_autorizacao_acesso = %s
