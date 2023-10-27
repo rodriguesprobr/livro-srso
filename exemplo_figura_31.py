@@ -28,7 +28,7 @@ O atributo graph_attr determina que o formato padrão do gráfico será com o us
 tamanho de 2048 pixels (altura e largura) e uso de arestas anguladas.
 """
 grafico = graphviz.Digraph(
-    filename="C:\\Users\\ferna\\Downloads\\exemplo31",
+    filename="C:\\Users\\usuario\\Downloads\\exemplo31",  # Personalizar
     format="png",
     engine="dot",
     encoding="utf-8",
