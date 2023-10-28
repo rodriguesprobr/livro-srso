@@ -1,6 +1,6 @@
 # Apresentação
 
-Este projeto trata do material suplementar ao livro intitulado "Estruturas de Dados em Serviços de Redes Sociais Online: Uma abordagem metodológica de análise", escrito por Fernando de Assis Rodrigues.
+Este projeto trata do material suplementar ao livro intitulado *Estruturas de Dados em Serviços de Redes Sociais Online: Uma abordagem metodológica de análise*, escrito por Fernando de Assis Rodrigues.
 Aqui você encontrará códigos-fonte escritos em Python e em Structured Query Language (SQL).
 
 O conteúdo deste projeto é de livre distribuição, desde que seja utilizada a Licença [Creative Commons 4.0 BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
