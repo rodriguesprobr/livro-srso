@@ -11,7 +11,7 @@ from bd import bd  # Importa a classe bd do arquivo bd.py
 __author__ = "Fernando de Assis Rodrigues"
 __copyright__ = "2023 - Fernando de Assis Rodrigues"
 __credits__ = ["Fernando de Assis Rodrigues"]
-__license__ = "Creative Commons 4.0 BY-SA-ND"
+__license__ = "Creative Commons 4.0 BY-NC-SA"
 __version__ = "1.0"
 __maintainer__ = "Fernando de Assis Rodrigues"
 __email__ = "fernando@rodrigues.pro.br"
@@ -28,10 +28,11 @@ modelagem_direta = bd(ip="localhost", usuario="usuario_do_banco_de_dados", senha
 # Personalizar as informações ip, usuario, senha e base_dados de acordo com a instalação do MySQL/MariaDB
 modelagem_segunda_ordem = bd(
     ip="localhost",
-    usuario="senha",
-    senha="usuario_do_banco_de_dados",
+    usuario="usuario_do_banco_de_dados",
+    senha="senha",
     base_dados="modelagem_segunda_ordem_acesso_atributo_relacao")
 
+# Exclui dados das dimensões para refrescamento e atualização
 modelagem_segunda_ordem.executar("DELETE FROM acesso WHERE 1;")
 modelagem_segunda_ordem.executar("DELETE FROM autorizacao_acesso WHERE 1;")
 modelagem_segunda_ordem.executar("DELETE FROM permissao WHERE 1;")
@@ -219,7 +220,7 @@ with Bar("Processando dados da dimensão Atributos", max=len(atributos)) as bar_
         )
         bar_atributo.next()
 
-# Insere dados para a dimensão relacao_grau, apenas para o grau 1, quando as Visões são acessíveis diretamente
+# Insere dados para a dimensão relacao_grau, apenas para o grau 1, quando os Atributos são acessíveis diretamente
 # por uma Autorização de Acesso ou um conjunto formado por uma Autorização de Acesso e por uma Permissão
 with Bar("Processando dados da dimensão Grau da Relação", max=1) as bar_relacao_grau:
     modelagem_segunda_ordem.inserir(

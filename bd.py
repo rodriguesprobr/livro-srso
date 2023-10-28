@@ -12,7 +12,7 @@ import sys  # Importa a biblioteca sys para controle do sistema
 __author__ = "Fernando de Assis Rodrigues"
 __copyright__ = "2023 - Fernando de Assis Rodrigues"
 __credits__ = ["Fernando de Assis Rodrigues"]
-__license__ = "Creative Commons 4.0 BY-SA-ND"
+__license__ = "Creative Commons 4.0 BY-NC-SA"
 __version__ = "1.0"
 __maintainer__ = "Fernando de Assis Rodrigues"
 __email__ = "fernando@rodrigues.pro.br"
